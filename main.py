@@ -10,12 +10,16 @@ class CurrencyPrice:
         options.add_argument(f'user-agent={UserAgent("chrome").random}')
         options.add_argument('--headless')
         driver = webdriver.Chrome(options=options)
-        self.driver = driver
+        self.__driver = driver
+
+    def get_soup(self):
+        soup = BeautifulSoup(self.__driver.page_source, 'html.parser')
+        return soup
 
     @property
     def currency_prices(self):
-        self.driver.get('https://www.tgju.org/currency')
-        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+        self.__driver.get('https://www.tgju.org/currency')
+        soup = self.get_soup()
         cells = soup.find('div', {'class':'fs-row'}).find_all('div', {'class' : 'fs-cell'})
         # print(cells)
         # print(len(cells))
@@ -38,8 +42,4 @@ class CurrencyPrice:
                                 'min-price':min_price_today,
                                 'max-price':max_price_todoy}
                 info[currency_id] = currency_info
-        return info
-
-
-print(CurrencyPrice().currency_prices)
-print(len(list(CurrencyPrice().currency_prices)))
+        # return info
