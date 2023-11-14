@@ -42,4 +42,4 @@ class CurrencyPrice:
                                 'min-price':min_price_today,
                                 'max-price':max_price_todoy}
                 info[currency_id] = currency_info
-        # return info
+        return info
