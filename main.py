@@ -63,12 +63,40 @@ class CurrencyPrice:
                     price_info = piece.find_all('td')
                     lowest_price = price_info[2].text.strip()
                     highest_price = price_info[3].text.strip()
+                    time = price_info[4]
 
                     piece_info_dic = {'name':piece_name,
                                       'price': piece_price,
                                       'min-price': lowest_price,
-                                      'max-price': highest_price}
+                                      'max-price': highest_price,
+                                      'price-time': time}
                     info[piece_id] = piece_info_dic
         return info 
-                
+    
+    @property
+    def coin_prices(self):
+        self.__driver.get('https://www.tgju.org/coin')
+        soup = self.get_soup()
+        cells= soup.find('div', {'class':'fs-row'}).find_all('div', {'class':'fs-cell'})
+        del cells[1]
+        info = {}
+        for cell in cells:
+            coins = cell.table.tbody.find_all('tr')
+            for coin in coins:
+                coin_id = coin['data-market-nameslug']
+                coin_name = coin.th.text.strip()
+                coin_info = coin.find_all('td')
+                coin_price = coin_info[0].text.strip()
+                lowest_price = coin_info[2].text.strip()
+                highest_price = coin_info[3].text.strip()
+                time = coin_info[4].text.strip()
+                coin_info_dict = {'name':coin_name,
+                                  'price':coin_price,
+                                  'min-price':lowest_price,
+                                  'max-price':highest_price,
+                                  'time':time}
+                info[coin_id] = coin_info_dict
+        return info
 
+print(CurrencyPrice().coin_prices)  
+        
