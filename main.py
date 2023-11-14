@@ -43,3 +43,32 @@ class CurrencyPrice:
                                 'max-price':max_price_todoy}
                 info[currency_id] = currency_info
         return info
+    
+    @property
+    def gold_prices(self):
+        self.__driver.get('https://www.tgju.org/gold-chart')
+        soup = self.get_soup()
+        cells_all = soup.find('div', {'class':'fs-row'}).find_all('div', {'class':'fs-cell'})
+        # print(len(cells))
+        cells = [cells_all[2], cells_all[3]]
+        info = {}
+        for cell in cells:
+            tables = cell.find_all('table', {'class':'data-table'})
+            for table in tables:
+                pieces = table.find('tbody').find_all('tr')
+                for piece in pieces:
+                    piece_id = piece['data-market-nameslug']
+                    piece_name = piece.th.text.strip()
+                    piece_price = piece.find('td', {'class':'nf'}).text.strip()
+                    price_info = piece.find_all('td')
+                    lowest_price = price_info[2].text.strip()
+                    highest_price = price_info[3].text.strip()
+
+                    piece_info_dic = {'name':piece_name,
+                                      'price': piece_price,
+                                      'min-price': lowest_price,
+                                      'max-price': highest_price}
+                    info[piece_id] = piece_info_dic
+        return info 
+                
+
